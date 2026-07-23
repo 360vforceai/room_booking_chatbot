@@ -1,0 +1,30 @@
+{
+  "name": "room_booking_chatbot",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/360vforceai/room_booking_chatbot#readme",
+  "bugs": {
+    "url": "https://github.com/360vforceai/room_booking_chatbot/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/360vforceai/room_booking_chatbot.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/bot/index.js",
+    "register": "node src/bot/registerCommands.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.1",
+    "cheerio": "^1.2.0",
+    "discord.js": "^14.26.4",
+    "dotenv": "^17.4.2",
+    "fuse.js": "^7.4.2",
+    "openai": "^6.42.0",
+    "puppeteer": "^25.1.0"
+  }
+}
