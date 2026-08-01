@@ -289,56 +289,119 @@ async function fetchRoomDetail(slug) {
   }
 }
 
+// ── Real filter IDs from the site's <select> elements ────────────────────────
+// URL: /book-a-space?campus=ID&library=ID&number_of_seats_value=SEATS&amenities[]=ID
+const CAMPUS_FILTER_IDS = {
+  all:           'All',
+  busch:         '1393',
+  camden:        '1391',
+  college_ave:   '1394',
+  cook_douglass: '1395',
+  livingston:    '1396',
+  new_brunswick: '1392',
+  newark:        '1397',
+};
+
+const LIBRARY_FILTER_IDS = {
+  alexander: '1401',
+  art:       '1402',
+  carr:      '1403',
+  chang:     '1404',
+  dana:      '1405',
+  douglass:  '1406',
+  lsm:       '1407',
+  rwj:       '1408',
+  robeson:   '1409',
+  smith:     '1410',
+};
+
+const AMENITY_FILTER_IDS = {
+  computer_station:       '1419',
+  hdmi:                   '1420',
+  large_display:          '1421',
+  power_wifi:             '1422',
+  recording:              '1423',
+  usb_charging:           '1424',
+  webcam:                 '1425',
+  configurable_furniture: '1386',
+  group_table:            '1387',
+  individual_desks:       '1388',
+  whiteboard:             '1389',
+};
+
+// ── Build filter URL matching the site's form GET submission ─────────────────
+function buildFilterUrl({ campus = null, library = null, seats = null, amenity = null, page = 0 } = {}) {
+  const params = new URLSearchParams();
+  if (campus && campus !== 'all' && CAMPUS_FILTER_IDS[campus]) params.set('campus', CAMPUS_FILTER_IDS[campus]);
+  if (library && LIBRARY_FILTER_IDS[library])                   params.set('library', LIBRARY_FILTER_IDS[library]);
+  if (seats)                                                     params.set('number_of_seats_value', seats);
+  if (amenity && AMENITY_FILTER_IDS[amenity])                   params.append('amenities[]', AMENITY_FILTER_IDS[amenity]);
+  if (page > 0)                                                  params.set('page', page);
+  return `${BASE}/book-a-space?${params.toString()}`;
+}
+
+// ── Count total pages from pagination links ───────────────────────────────────
+function countPages(html) {
+  const matches = [...html.matchAll(/[?&]page=(\d+)/g)];
+  if (!matches.length) return 1;
+  return Math.max(...matches.map(m => parseInt(m[1], 10))) + 1;
+}
+
+// ── Parse room slugs and libcal URLs from a listing page ─────────────────────
+function parseRoomsFromHtml(html, libraryKey) {
+  const rooms = [];
+  const seen  = new Set();
+  const slugMatches   = [...html.matchAll(/href="(\/book-a-space\/[a-z][^"]+)"/g)];
+  const libcalMatches = [...html.matchAll(/href="(https:\/\/libcal\.rutgers\.edu\/(?:space|reserve)\/[^"]+)"/g)];
+  slugMatches.forEach((m, idx) => {
+    const slug = m[1].replace('/book-a-space/', '');
+    if (seen.has(slug)) return;
+    seen.add(slug);
+    const name      = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const libcalUrl = libcalMatches[idx] ? libcalMatches[idx][1] : `${LIBCAL}/spaces`;
+    rooms.push({ slug, name, library: libraryKey || null, libcalUrl, detailUrl: `${BASE}/book-a-space/${slug}` });
+  });
+  return rooms;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
-// SEARCH / FILTER
+// SEARCH — server-side filtering via the site's own form URL
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Filters the room list by campus, library, minimum seats, and amenity.
- * campus = campus value from registerCommands (e.g. 'college_ave')
- * library = specific library value (e.g. 'alexander') — takes priority over campus
- * seats = minimum number (integer)
- * amenity = amenity key string (e.g. 'whiteboard')
+ * Searches rooms by submitting the same GET request the site's Search button does.
+ * seats = string passed directly: '1-3', '4-6', '7+', or null
+ * amenity = key from AMENITY_FILTER_IDS, or null
  */
 async function searchRooms({ campus = null, library = null, seats = null, amenity = null } = {}) {
-  const allRooms = await fetchAllRooms();
+  const campusVal = (campus && campus !== 'all') ? campus : null;
+  const firstUrl  = buildFilterUrl({ campus: campusVal, library, seats, amenity, page: 0 });
+  logger.info('searchRooms URL:', firstUrl);
 
-  // Step 1: filter by library or campus (cheap, no extra fetch)
-  let filtered = allRooms;
+  try {
+    const firstHtml  = await fetchHtml(firstUrl);
+    const totalPages = countPages(firstHtml);
+    const rooms      = parseRoomsFromHtml(firstHtml, library || null);
 
-  if (library) {
-    // Direct library filter — match rooms whose detected library equals the value
-    filtered = allRooms.filter(r => detectLibrary(r.slug) === library);
-  } else if (campus && campus !== 'all') {
-    // Campus filter — expand to all libraries on that campus
-    const libs = CAMPUS_TO_LIBRARIES[campus] || [];
-    if (libs.length > 0) {
-      filtered = allRooms.filter(r => libs.includes(detectLibrary(r.slug)));
-    }
-    // 'new_brunswick' covers most libraries so filtered may still be large — that's fine
-  }
-
-  // Step 2: if seats or amenity filter needed, fetch details in parallel (max 20 at a time)
-  if (seats || amenity) {
-    const BATCH = 20;
-    const detailed = [];
-
-    for (let i = 0; i < filtered.length; i += BATCH) {
-      const batch = filtered.slice(i, i + BATCH);
-      const details = await Promise.all(
-        batch.map(r => fetchRoomDetail(r.slug).catch(() => null))
+    if (totalPages > 1) {
+      const rest = await Promise.all(
+        Array.from({ length: totalPages - 1 }, (_, i) =>
+          fetchHtml(buildFilterUrl({ campus: campusVal, library, seats, amenity, page: i + 1 }))
+            .then(html => parseRoomsFromHtml(html, library || null))
+            .catch(err => { logger.warn(`searchRooms page ${i+1} failed:`, err.message); return []; })
+        )
       );
-      for (const d of details) {
-        if (!d) continue;
-        if (seats && (!d.capacity || d.capacity < seats)) continue;
-        if (amenity && !d.amenityFlags[amenity]) continue;
-        detailed.push(d);
-      }
+      for (const batch of rest) rooms.push(...batch);
     }
-    return detailed;
-  }
 
-  return filtered;
+    const seen   = new Set();
+    const unique = rooms.filter(r => { if (seen.has(r.slug)) return false; seen.add(r.slug); return true; });
+    logger.info(`searchRooms found ${unique.length} rooms`, { campus, library, seats, amenity });
+    return unique;
+  } catch (err) {
+    logger.error('searchRooms failed:', err.message);
+    return [];
+  }
 }
 
 /**
@@ -348,14 +411,10 @@ async function autocompleteRoom(query) {
   const allRooms = await fetchAllRooms();
   const q = query.toLowerCase().trim();
   if (!q) return allRooms.slice(0, 25);
-
-  return allRooms
-    .filter(r => r.name.toLowerCase().includes(q) || r.slug.includes(q))
-    .slice(0, 25);
+  return allRooms.filter(r => r.name.toLowerCase().includes(q) || r.slug.includes(q)).slice(0, 25);
 }
 
 // ── Display name maps ─────────────────────────────────────────────────────────
-// Library values → human-readable names (matches registerCommands choices)
 const LIBRARY_LABELS = {
   alexander: 'Alexander Library',
   art:       'Art Library',
@@ -369,7 +428,6 @@ const LIBRARY_LABELS = {
   smith:     'Smith Library - Health Sciences',
 };
 
-// Campus values → human-readable names (matches registerCommands choices)
 const CAMPUS_LABELS = {
   busch:         'Busch Campus',
   camden:        'Camden Campus',
@@ -383,6 +441,7 @@ const CAMPUS_LABELS = {
 function campusLabel(value) {
   return LIBRARY_LABELS[value] || CAMPUS_LABELS[value] || value;
 }
+
 
 module.exports = {
   fetchAllRooms,
