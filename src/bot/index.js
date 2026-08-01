@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits  } = require('discord.js');
 const logger = require('../utils/logger');
-const { handleInteraction, handleAutocomplete } = require('./interactionHandler');
+const { handleInteraction } = require('./interactionHandler');
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
@@ -12,11 +12,6 @@ client.once('clientReady', (readyClient) => {
 });
 
 client.on('interactionCreate', async (interaction) => {
-  // Autocomplete must be responded to within ~3 seconds — handle it first
-  if (interaction.isAutocomplete()) {
-    await handleAutocomplete(interaction);
-    return;
-  }
   await handleInteraction(interaction);
 });
 
