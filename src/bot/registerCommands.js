@@ -103,20 +103,14 @@ const commands = [
   },
   {
     name: 'next-available',
-    description: 'Get the LibCal link to find the next available slot for a library room',
+    description: 'Find the next available time slots for a library room',
     options: [
       {
         name: 'room',
         type: 3,
-        description: 'Room name or number (e.g. "342", "Study Room 301A")',
+        description: 'Which room? (type to search)',
         required: true,
         autocomplete: true
-      },
-      {
-        name: 'date',
-        type: 3,
-        description: 'Date to check (e.g. "today", "tomorrow", "2026-08-01") — defaults to today',
-        required: false
       }
     ]
   },

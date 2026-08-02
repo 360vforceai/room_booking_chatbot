@@ -8,6 +8,7 @@ const {
 const {
   fetchAllRooms,
   fetchRoomDetail,
+  fetchNextAvailable,
   searchRooms,
   autocompleteRoom,
   campusLabel,
@@ -236,20 +237,17 @@ async function handleRoomInfo(interaction, userId) {
   logger.info('Handled /room-info', { userId, slug });
 }
 
-// ── /next-available ───────────────────────────────────────────────────────────
-// LibCal availability data isn't accessible without OAuth.
-// We give the user the direct LibCal booking page for the room with clear instructions.
+// ── /next-available ──────────────────────────────────────────────────────────
+// Two-step LibCal API: GET nextdate → POST grid for time slots
 
 async function handleNextAvailable(interaction, userId) {
   const slug = interaction.options.getString('room');
-  const date = interaction.options.getString('date') || 'today';
 
   if (!slug) {
     await interaction.editReply('Please select a room from the dropdown.').catch(() => {});
     return;
   }
 
-  // Get room data for the libcal URL and name
   const room = await fetchRoomDetail(slug);
   if (!room) {
     await interaction.editReply(
@@ -258,49 +256,74 @@ async function handleNextAvailable(interaction, userId) {
     return;
   }
 
-  // Parse date string into something readable
-  let dateLabel = date;
-  if (date.toLowerCase() === 'today') {
-    dateLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/New_York' });
-  } else if (date.toLowerCase() === 'tomorrow') {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    dateLabel = tomorrow.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/New_York' });
+  const avail = await fetchNextAvailable(room.eid, 'today');
+
+  // ── No availability data ──────────────────────────────────────────────────
+  const todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/New_York' });
+
+  if (!avail || !avail.slots || avail.slots.length === 0) {
+    const embed = {
+      color: 0xED4245, // red
+      title: `📅 ${room.name} — No Availability Found`,
+      description: [
+        `No available slots found starting from **${todayLabel}**.`,
+        '',
+        'Try checking the LibCal page directly for a wider date range:',
+      ].join('\n'),
+      fields: [{ name: '🔗 Book on LibCal', value: room.libcalUrl, inline: false }],
+      footer: { text: 'Rutgers University Libraries · libcal.rutgers.edu' }
+    };
+    await interaction.editReply({ embeds: [embed] }).catch(() => {});
+    return;
   }
 
+  // ── Format available blocks ───────────────────────────────────────────────
+  function fmt(dateStr) {
+    const d = new Date(dateStr.replace(' ', 'T') + '-04:00');
+    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' });
+  }
+
+  const blockLines = avail.blocks.map(b => `🟢 **${fmt(b.start)} – ${fmt(b.end)}**`).join('\n')
+    || avail.slots.slice(0, 10).map(s => `🟢 **${fmt(s.start)} – ${fmt(s.end)}**`).join('\n');
+
   const embed = {
-    color: 0xCC0033,
+    color: 0x57F287, // green
     title: `📅 Next Available — ${room.name}`,
-    description: [
-      `Live slot availability for **${room.name}** requires signing into LibCal directly.`,
-      '',
-      '**How to find the next available slot:**',
-      '1. Click the booking link below',
-      '2. On the LibCal page, click **"Next Available"** button',
-      '3. Select your preferred time slot and complete the booking form',
-      '',
-      `📍 ${room.location || campusLabel(room.campus)}`,
-      room.capacity ? `👥 Up to ${room.capacity} people` : '',
-      room.maxReservation ? `⏱️ ${room.maxReservation.replace(/^maximum reservation length:\s*/i, '')}` : '',
-    ].filter(Boolean).join('\n'),
+    description: `Available slots on **${avail.dateLabel}**:`,
     fields: [
       {
-        name: '🔗 Book Now',
-        value: `[Open LibCal for ${room.name}](${room.libcalUrl})`,
+        name: '🕐 Available Times',
+        value: blockLines,
         inline: false
       },
+      room.location && {
+        name: '📍 Location',
+        value: room.location.replace(/^location:\s*/i, '').trim(),
+        inline: false
+      },
+      room.capacity && {
+        name: '👥 Capacity',
+        value: `Up to ${room.capacity} people`,
+        inline: true
+      },
+      room.maxReservation && {
+        name: '⏱️ Max Booking',
+        value: room.maxReservation.replace(/^maximum reservation length:\s*/i, '').trim(),
+        inline: true
+      },
       {
-        name: '📋 Requirements',
-        value: 'Valid Rutgers NetID required. Only 1 study room per NetID per day at Alexander Library (max 3 hours).',
+        name: '🔗 Book This Room',
+        value: `[Reserve on LibCal](${avail.bookingUrl})`,
         inline: false
       }
-    ],
-    footer: { text: `Checking availability for ${dateLabel} · Rutgers University Libraries` }
+    ].filter(Boolean),
+    footer: { text: `Live availability · Rutgers University Libraries` }
   };
 
   await interaction.editReply({ embeds: [embed] }).catch(() => {});
-  logger.info('Handled /next-available', { userId, slug, date });
+  logger.info('Handled /next-available', { userId, slug, date: avail.date, blocks: avail.blocks.length });
 }
+
 
 // ── /ask ──────────────────────────────────────────────────────────────────────
 

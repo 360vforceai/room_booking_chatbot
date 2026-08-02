@@ -200,9 +200,12 @@ async function fetchRoomDetail(slug) {
     const titleMatch = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
     const name = titleMatch ? stripTags(titleMatch[1]) : slug.replace(/-/g, ' ');
 
-    // ── LibCal booking URL ──
+    // ── LibCal booking URL + eid ──
     const libcalMatch = html.match(/href="(https:\/\/libcal\.rutgers\.edu\/(?:space|reserve)\/[^"]+)"/);
     const libcalUrl = libcalMatch ? libcalMatch[1] : `${LIBCAL}/spaces`;
+    const eidMatch  = libcalUrl.match(/\/space\/(\d+)/) || libcalUrl.match(/\/(\d+)$/);
+    const eid       = eidMatch ? eidMatch[1] : null;
+    logger.info('fetchRoomDetail eid', { slug, eid, libcalUrl });
 
     // ── Extract top-level sections by h2/h3 headings ──
     const sectionRegex = /<(?:h2|h3)[^>]*>([\s\S]*?)<\/(?:h2|h3)>([\s\S]*?)(?=<(?:h2|h3)|$)/gi;
@@ -267,6 +270,7 @@ async function fetchRoomDetail(slug) {
     const data = {
       slug,
       name,
+      eid,
       detailUrl: url,
       libcalUrl,
       description,
@@ -290,7 +294,6 @@ async function fetchRoomDetail(slug) {
 }
 
 // ── Real filter IDs from the site's <select> elements ────────────────────────
-// URL: /book-a-space?campus=ID&library=ID&number_of_seats_value=SEATS&amenities[]=ID
 const CAMPUS_FILTER_IDS = {
   all:           'All',
   busch:         '1393',
@@ -301,65 +304,44 @@ const CAMPUS_FILTER_IDS = {
   new_brunswick: '1392',
   newark:        '1397',
 };
-
 const LIBRARY_FILTER_IDS = {
-  alexander: '1401',
-  art:       '1402',
-  carr:      '1403',
-  chang:     '1404',
-  dana:      '1405',
-  douglass:  '1406',
-  lsm:       '1407',
-  rwj:       '1408',
-  robeson:   '1409',
-  smith:     '1410',
+  alexander: '1401', art: '1402', carr: '1403', chang: '1404',
+  dana: '1405', douglass: '1406', lsm: '1407', rwj: '1408',
+  robeson: '1409', smith: '1410',
 };
-
 const AMENITY_FILTER_IDS = {
-  computer_station:       '1419',
-  hdmi:                   '1420',
-  large_display:          '1421',
-  power_wifi:             '1422',
-  recording:              '1423',
-  usb_charging:           '1424',
-  webcam:                 '1425',
-  configurable_furniture: '1386',
-  group_table:            '1387',
-  individual_desks:       '1388',
-  whiteboard:             '1389',
+  computer_station: '1419', hdmi: '1420', large_display: '1421',
+  power_wifi: '1422', recording: '1423', usb_charging: '1424',
+  webcam: '1425', configurable_furniture: '1386', group_table: '1387',
+  individual_desks: '1388', whiteboard: '1389',
 };
 
-// ── Build filter URL matching the site's form GET submission ─────────────────
-function buildFilterUrl({ campus = null, library = null, seats = null, amenity = null, page = 0 } = {}) {
-  const params = new URLSearchParams();
-  if (campus && campus !== 'all' && CAMPUS_FILTER_IDS[campus]) params.set('campus', CAMPUS_FILTER_IDS[campus]);
-  if (library && LIBRARY_FILTER_IDS[library])                   params.set('library', LIBRARY_FILTER_IDS[library]);
-  if (seats)                                                     params.set('number_of_seats_value', seats);
-  if (amenity && AMENITY_FILTER_IDS[amenity])                   params.append('amenities[]', AMENITY_FILTER_IDS[amenity]);
-  if (page > 0)                                                  params.set('page', page);
-  return `${BASE}/book-a-space?${params.toString()}`;
+function buildFilterUrl({ campus=null, library=null, seats=null, amenity=null, page=0 }={}) {
+  const p = new URLSearchParams();
+  if (campus && campus !== 'all' && CAMPUS_FILTER_IDS[campus]) p.set('campus', CAMPUS_FILTER_IDS[campus]);
+  if (library && LIBRARY_FILTER_IDS[library])                   p.set('library', LIBRARY_FILTER_IDS[library]);
+  if (seats)                                                     p.set('number_of_seats_value', seats);
+  if (amenity && AMENITY_FILTER_IDS[amenity])                   p.append('amenities[]', AMENITY_FILTER_IDS[amenity]);
+  if (page > 0)                                                  p.set('page', page);
+  return `${BASE}/book-a-space?${p.toString()}`;
 }
 
-// ── Count total pages from pagination links ───────────────────────────────────
 function countPages(html) {
-  const matches = [...html.matchAll(/[?&]page=(\d+)/g)];
-  if (!matches.length) return 1;
-  return Math.max(...matches.map(m => parseInt(m[1], 10))) + 1;
+  const m = [...html.matchAll(/[?&]page=(\d+)/g)];
+  return m.length ? Math.max(...m.map(x => parseInt(x[1], 10))) + 1 : 1;
 }
 
-// ── Parse room slugs and libcal URLs from a listing page ─────────────────────
 function parseRoomsFromHtml(html, libraryKey) {
-  const rooms = [];
-  const seen  = new Set();
-  const slugMatches   = [...html.matchAll(/href="(\/book-a-space\/[a-z][^"]+)"/g)];
-  const libcalMatches = [...html.matchAll(/href="(https:\/\/libcal\.rutgers\.edu\/(?:space|reserve)\/[^"]+)"/g)];
-  slugMatches.forEach((m, idx) => {
+  const rooms = [], seen = new Set();
+  const slugs   = [...html.matchAll(/href="(\/book-a-space\/[a-z][^"]+)"/g)];
+  const libcals = [...html.matchAll(/href="(https:\/\/libcal\.rutgers\.edu\/(?:space|reserve)\/[^"]+)"/g)];
+  slugs.forEach((m, i) => {
     const slug = m[1].replace('/book-a-space/', '');
     if (seen.has(slug)) return;
     seen.add(slug);
-    const name      = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    const libcalUrl = libcalMatches[idx] ? libcalMatches[idx][1] : `${LIBCAL}/spaces`;
-    rooms.push({ slug, name, library: libraryKey || null, libcalUrl, detailUrl: `${BASE}/book-a-space/${slug}` });
+    const name = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const libcalUrl = libcals[i] ? libcals[i][1] : `${LIBCAL}/spaces`;
+    rooms.push({ slug, name, library: libraryKey||null, libcalUrl, detailUrl: `${BASE}/book-a-space/${slug}` });
   });
   return rooms;
 }
@@ -367,42 +349,34 @@ function parseRoomsFromHtml(html, libraryKey) {
 // ═══════════════════════════════════════════════════════════════════════════
 // SEARCH — server-side filtering via the site's own form URL
 // ═══════════════════════════════════════════════════════════════════════════
-
-/**
- * Searches rooms by submitting the same GET request the site's Search button does.
- * seats = string passed directly: '1-3', '4-6', '7+', or null
- * amenity = key from AMENITY_FILTER_IDS, or null
- */
-async function searchRooms({ campus = null, library = null, seats = null, amenity = null } = {}) {
+async function searchRooms({ campus=null, library=null, seats=null, amenity=null }={}) {
   const campusVal = (campus && campus !== 'all') ? campus : null;
   const firstUrl  = buildFilterUrl({ campus: campusVal, library, seats, amenity, page: 0 });
   logger.info('searchRooms URL:', firstUrl);
-
   try {
     const firstHtml  = await fetchHtml(firstUrl);
     const totalPages = countPages(firstHtml);
-    const rooms      = parseRoomsFromHtml(firstHtml, library || null);
-
+    const rooms      = parseRoomsFromHtml(firstHtml, library||null);
     if (totalPages > 1) {
       const rest = await Promise.all(
-        Array.from({ length: totalPages - 1 }, (_, i) =>
-          fetchHtml(buildFilterUrl({ campus: campusVal, library, seats, amenity, page: i + 1 }))
-            .then(html => parseRoomsFromHtml(html, library || null))
-            .catch(err => { logger.warn(`searchRooms page ${i+1} failed:`, err.message); return []; })
+        Array.from({ length: totalPages-1 }, (_,i) =>
+          fetchHtml(buildFilterUrl({ campus: campusVal, library, seats, amenity, page: i+1 }))
+            .then(h => parseRoomsFromHtml(h, library||null))
+            .catch(() => [])
         )
       );
-      for (const batch of rest) rooms.push(...batch);
+      for (const b of rest) rooms.push(...b);
     }
-
-    const seen   = new Set();
+    const seen = new Set();
     const unique = rooms.filter(r => { if (seen.has(r.slug)) return false; seen.add(r.slug); return true; });
-    logger.info(`searchRooms found ${unique.length} rooms`, { campus, library, seats, amenity });
+    logger.info(`searchRooms found ${unique.length} rooms`);
     return unique;
   } catch (err) {
     logger.error('searchRooms failed:', err.message);
     return [];
   }
 }
+
 
 /**
  * Autocomplete: fuzzy-match room name or slug against a query string.
@@ -411,10 +385,14 @@ async function autocompleteRoom(query) {
   const allRooms = await fetchAllRooms();
   const q = query.toLowerCase().trim();
   if (!q) return allRooms.slice(0, 25);
-  return allRooms.filter(r => r.name.toLowerCase().includes(q) || r.slug.includes(q)).slice(0, 25);
+
+  return allRooms
+    .filter(r => r.name.toLowerCase().includes(q) || r.slug.includes(q))
+    .slice(0, 25);
 }
 
 // ── Display name maps ─────────────────────────────────────────────────────────
+// Library values → human-readable names (matches registerCommands choices)
 const LIBRARY_LABELS = {
   alexander: 'Alexander Library',
   art:       'Art Library',
@@ -428,6 +406,7 @@ const LIBRARY_LABELS = {
   smith:     'Smith Library - Health Sciences',
 };
 
+// Campus values → human-readable names (matches registerCommands choices)
 const CAMPUS_LABELS = {
   busch:         'Busch Campus',
   camden:        'Camden Campus',
@@ -442,6 +421,179 @@ function campusLabel(value) {
   return LIBRARY_LABELS[value] || CAMPUS_LABELS[value] || value;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// AVAILABILITY — LibCal internal API
+// ═══════════════════════════════════════════════════════════════════════════
+// Two-step process:
+//   1. GET nextdate endpoint → returns next date with availability
+//   2. POST spaces/availability/grid → returns time slots for that date
+//
+// lid and gid are per-location/group IDs embedded in the LibCal space page.
+// We scrape them from the page JS when needed.
+
+const AVAIL_CACHE_MS = 5 * 60 * 1000; // 5 min cache
+const _availCache = new Map(); // eid → { data, fetchedAt }
+
+/**
+ * Scrapes lid and gid from a LibCal space page (needed for availability calls).
+ */
+async function fetchLibCalIds(eid) {
+  try {
+    const res = await fetch(`${LIBCAL}/space/${eid}`, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const html = await res.text();
+
+    // lid and gid are in the springyPage JS object on the page
+    const lidMatch = html.match(/locationId[:\s]+(\d+)/);
+    const gidMatch = html.match(/groupId[:\s]+(\d+)/);
+    const lid = lidMatch ? lidMatch[1] : null;
+    const gid = gidMatch ? gidMatch[1] : null;
+
+    logger.info('fetchLibCalIds', { eid, lid, gid });
+    return { lid, gid };
+  } catch (err) {
+    logger.error('fetchLibCalIds failed:', { eid, error: err.message });
+    return { lid: null, gid: null };
+  }
+}
+
+/**
+ * Formats a slot time range into a readable string.
+ * e.g. "2026-08-03 08:00:00" → "8:00 AM"
+ */
+function formatSlotTime(dateStr) {
+  const d = new Date(dateStr.replace(' ', 'T') + '-04:00'); // Eastern time
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' });
+}
+
+function formatSlotDate(dateStr) {
+  const d = new Date(dateStr.replace(' ', 'T') + '-04:00');
+  return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
+}
+
+/**
+ * Gets the next available date and time slots for a room.
+ * @param {string} eid  - LibCal item/space ID (e.g. "16936")
+ * @param {string} date - YYYY-MM-DD date to start from (defaults to today)
+ */
+async function fetchNextAvailable(eid, date = null) {
+  if (!eid) return null;
+
+  const cacheKey = `${eid}_${date || 'today'}`;
+  const cached = _availCache.get(cacheKey);
+  if (cached && (Date.now() - cached.fetchedAt) < AVAIL_CACHE_MS) return cached.data;
+
+  try {
+    // Step 1: get lid and gid
+    const { lid, gid } = await fetchLibCalIds(eid);
+    if (!lid || !gid) throw new Error(`Could not get lid/gid for eid=${eid}`);
+
+    // Step 2: GET nextdate — returns { date: "YYYY-MM-DD", page: N }
+    const nextDateUrl = `${LIBCAL}/equipment/availability/nextdate?lid=${lid}&gid=${gid}&eid=${eid}&seatId=0&zone=0&capacity=0&isEquipment=false&isSeatBooking=0&pageIndex=0&pageSize=18`;
+    const nextDateRes = await fetch(nextDateUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': `${LIBCAL}/space/${eid}`
+      }
+    });
+    if (!nextDateRes.ok) throw new Error(`nextdate HTTP ${nextDateRes.status}`);
+    const nextDateData = await nextDateRes.json();
+    logger.info('fetchNextAvailable nextdate', nextDateData);
+
+    const availDate = nextDateData.date;
+    if (!availDate) throw new Error('nextdate returned no date');
+
+    // Step 3: POST grid for that date using the page number from nextdate response
+    const endDateObj = new Date(availDate + 'T12:00:00');
+    endDateObj.setDate(endDateObj.getDate() + 1);
+    const endDateStr = endDateObj.toISOString().slice(0, 10);
+
+    const body = new URLSearchParams({
+      lid, gid, eid,
+      seat: '0', seatId: '0', zone: '0',
+      start: availDate,
+      end: endDateStr,
+      pageIndex: String(nextDateData.page || 0),
+      pageSize: '18'
+    });
+
+    logger.info('fetchNextAvailable grid POST', { availDate, endDateStr, page: nextDateData.page || 0 });
+
+    const gridRes = await fetch(`${LIBCAL}/spaces/availability/grid`, {
+      method: 'POST',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': `${LIBCAL}/space/${eid}`,
+        'Origin': LIBCAL
+      },
+      body: body.toString()
+    });
+    if (!gridRes.ok) throw new Error(`grid HTTP ${gridRes.status}`);
+    const gridData = await gridRes.json();
+
+    const allSlots = gridData.slots || [];
+    logger.info('Grid slots count:', allSlots.length, 'sample:', JSON.stringify(allSlots[0] || {}));
+
+    // Filter to only slots for THIS room (grid returns all rooms in the group)
+    // and exclude unavailable slots
+    const eidInt = parseInt(eid, 10);
+    const slots = allSlots.filter(s => {
+      if (s.itemId !== eidInt) return false; // wrong room
+      const cls   = (s.className || s.class || s.status || '').toLowerCase();
+      const title = (s.title || '').toLowerCase();
+      if (cls.includes('unavailable') || cls.includes('checkout') ||
+          cls.includes('pending')     || cls.includes('booked'))    return false;
+      if (title.includes('unavailable') || title.includes('booked')) return false;
+      return true;
+    });
+    logger.info('Grid filtered slots:', slots.length);
+
+    // Merge consecutive 1-hour slots into blocks
+    const blocks = [];
+    let blockStart = null;
+    let blockEnd   = null;
+    for (const slot of slots) {
+      if (!blockStart) {
+        blockStart = slot.start;
+        blockEnd   = slot.end;
+      } else if (slot.start === blockEnd) {
+        blockEnd = slot.end;
+      } else {
+        blocks.push({ start: blockStart, end: blockEnd });
+        blockStart = slot.start;
+        blockEnd   = slot.end;
+      }
+    }
+    if (blockStart) blocks.push({ start: blockStart, end: blockEnd });
+
+    function formatSlotDate(dateStr) {
+      const d = new Date(dateStr + 'T12:00:00');
+      return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
+    }
+
+    const result = {
+      date: availDate,
+      dateLabel: formatSlotDate(availDate),
+      slots,
+      blocks,
+      bookingUrl: `${LIBCAL}/space/${eid}`
+    };
+
+    _availCache.set(cacheKey, { data: result, fetchedAt: Date.now() });
+    logger.info('fetchNextAvailable result', { eid, date: availDate, slots: slots.length, blocks: blocks.length });
+    return result;
+  } catch (err) {
+    logger.error('fetchNextAvailable failed:', { eid, error: err.message });
+    return null;
+  }
+}
 
 module.exports = {
   fetchAllRooms,
@@ -449,6 +601,8 @@ module.exports = {
   searchRooms,
   autocompleteRoom,
   campusLabel,
+  fetchNextAvailable,
+  fetchLibCalIds,
   detectLibrary,
   CAMPUS_LABELS,
   LIBRARY_LABELS,
