@@ -13,6 +13,13 @@ const {
   autocompleteRoom,
   campusLabel,
 } = require('../agents/roomBookingClient');
+const {
+  fetchRoomDay,
+  fetchAllRoomsSummary,
+  listBuildings,
+  LOGIN_URL,
+  BROWSE_URL,
+} = require('../agents/studentCenterBrowser');
 const logger = require('../utils/logger');
 
 // ── Duplicate interaction guard ───────────────────────────────────────────────
@@ -91,27 +98,39 @@ async function handleAutocomplete(interaction) {
     return;
   }
 
+  if (commandName === 'student-center' && focused.name === 'building') {
+    const typed = (focused.value || '').toLowerCase();
+    const matches = listBuildings()
+      .filter(b => b.name.toLowerCase().includes(typed) || b.id === focused.value)
+      .slice(0, 25);
+    // Value sent back is the building id — handleStudentCenterSummary
+    // already matches on exact buildingId OR label substring, so this
+    // works whether the option is filled via the dropdown or typed by hand.
+    await interaction.respond(
+      matches.map(b => ({ name: b.name, value: b.id }))
+    ).catch(() => {});
+    return;
+  }
+
   await interaction.respond([]).catch(() => {});
 }
 
 // ── /library-rooms ────────────────────────────────────────────────────────────
-// Filter rooms by campus, minimum seats, and amenity.
-// Shows a list embed — up to 10 results with name, capacity, key amenities, book link.
+// (unchanged — see roomBookingClient.js)
 
 async function handleLibraryRooms(interaction, userId) {
   const campus   = interaction.options.getString('campus');
   const library  = interaction.options.getString('library');
-  const seatsStr = interaction.options.getString('seats'); // '1-3', '4-6', '7+', 'any', or null
+  const seatsStr = interaction.options.getString('seats');
   const amenity  = interaction.options.getString('amenity');
 
-  // campus 'all' means no filter; seats 'any' means no filter
   const campusFilter = (campus && campus !== 'all') ? campus : null;
   const seatsFilter  = (seatsStr && seatsStr !== 'any') ? seatsStr : null;
 
   const results = await searchRooms({
     campus:  campusFilter || null,
     library: library      || null,
-    seats:   seatsFilter,           // pass string directly e.g. '4-6' — site handles it
+    seats:   seatsFilter,
     amenity: amenity      || null
   });
 
@@ -122,7 +141,7 @@ async function handleLibraryRooms(interaction, userId) {
       seatsFilter  ? `seats: **${seatsFilter}**`                    : null,
       amenity      ? `amenity: **${amenityLabel(amenity)}**`        : null,
     ].filter(Boolean);
- 
+
     await interaction.editReply({
       embeds: [{
         color: 0xCC0033,
@@ -133,10 +152,10 @@ async function handleLibraryRooms(interaction, userId) {
     }).catch(() => {});
     return;
   }
- 
+
   const hasDetail = results[0].amenityFlags !== undefined;
   const shown = results.slice(0, 10);
- 
+
   const fields = shown.map(r => {
     const detail = hasDetail ? r : null;
     const capacityStr = detail?.capacity ? `👥 Up to ${detail.capacity} people` : '';
@@ -149,21 +168,21 @@ async function handleLibraryRooms(interaction, userId) {
     const locationStr = detail?.location ? `📍 ${detail.location}` : '';
     const lines = [capacityStr, locationStr, amenityStr, `[Book this room](${r.libcalUrl || detail?.libcalUrl})`]
       .filter(Boolean);
- 
+
     return {
       name: r.name || detail?.name,
       value: lines.join('\n') || 'See detail page for more info',
       inline: false
     };
   });
- 
+
   const filterSummary = [
     library      ? campusLabel(library)                              : null,
     campusFilter ? campusLabel(campusFilter)                        : (!library ? 'All campuses' : null),
     seatsFilter  ? `${seatsFilter} seats`                           : null,
     amenity      ? amenityLabel(amenity)                            : null,
   ].filter(Boolean).join(' · ');
- 
+
   const embed = {
     color: 0xCC0033,
     title: `📚 Library Rooms — ${filterSummary}`,
@@ -171,13 +190,13 @@ async function handleLibraryRooms(interaction, userId) {
     fields,
     footer: { text: 'Rutgers University Libraries · libraries.rutgers.edu/book-a-space' }
   };
- 
+
   await interaction.editReply({ embeds: [embed] }).catch(() => {});
   logger.info('Handled /library-rooms', { userId, campus, library, seatsStr, amenity, found: results.length });
 }
 
 // ── /room-info ────────────────────────────────────────────────────────────────
-// Full details for a specific room scraped from its detail page.
+// (unchanged — see roomBookingClient.js)
 
 async function handleRoomInfo(interaction, userId) {
   const slug = interaction.options.getString('room');
@@ -203,18 +222,15 @@ async function handleRoomInfo(interaction, userId) {
     ? room.technology.map(t => `• ${t}`).join('\n')
     : 'See room page for details';
 
-  // Capacity: parsed value or fall back to seat count in description text
   const capacityNum = room.capacity
     || (room.description && room.description.match(/(\d+)\s*seats?/i)
         ? parseInt(room.description.match(/(\d+)\s*seats?/i)[1])
         : null);
 
-  // Strip bold labels the site puts in Space Details
   const locationText     = room.location      ? room.location.replace(/^location:\s*/i, '').trim()                         : null;
   const accessText       = room.access        ? room.access.replace(/^how to access this space:\s*/i, '').trim()           : null;
   const maxText          = room.maxReservation? room.maxReservation.replace(/^maximum reservation length:\s*/i, '').trim() : null;
 
-  // All field values must be non-empty strings — Discord errors silently on empty values
   const fields = [
     locationText && { name: '📍 Location',          value: locationText,                                                    inline: false },
     capacityNum  && { name: '👥 Capacity',           value: `Up to **${capacityNum}** people`,                              inline: true  },
@@ -238,7 +254,7 @@ async function handleRoomInfo(interaction, userId) {
 }
 
 // ── /next-available ──────────────────────────────────────────────────────────
-// Two-step LibCal API: GET nextdate → POST grid for time slots
+// (unchanged — see roomBookingClient.js)
 
 async function handleNextAvailable(interaction, userId) {
   const slug = interaction.options.getString('room');
@@ -258,12 +274,11 @@ async function handleNextAvailable(interaction, userId) {
 
   const avail = await fetchNextAvailable(room.eid, 'today');
 
-  // ── No availability data ──────────────────────────────────────────────────
   const todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/New_York' });
 
   if (!avail || !avail.slots || avail.slots.length === 0) {
     const embed = {
-      color: 0xED4245, // red
+      color: 0xED4245,
       title: `📅 ${room.name} — No Availability Found`,
       description: [
         `No available slots found starting from **${todayLabel}**.`,
@@ -277,7 +292,6 @@ async function handleNextAvailable(interaction, userId) {
     return;
   }
 
-  // ── Format available blocks ───────────────────────────────────────────────
   function fmt(dateStr) {
     const d = new Date(dateStr.replace(' ', 'T') + '-04:00');
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' });
@@ -287,7 +301,7 @@ async function handleNextAvailable(interaction, userId) {
     || avail.slots.slice(0, 10).map(s => `🟢 **${fmt(s.start)} – ${fmt(s.end)}**`).join('\n');
 
   const embed = {
-    color: 0x57F287, // green
+    color: 0x57F287,
     title: `📅 Next Available — ${room.name}`,
     description: `Available slots on **${avail.dateLabel}**:`,
     fields: [
@@ -324,6 +338,212 @@ async function handleNextAvailable(interaction, userId) {
   logger.info('Handled /next-available', { userId, slug, date: avail.date, blocks: avail.blocks.length });
 }
 
+// ── /student-center ───────────────────────────────────────────────────────────
+// Rooms for established Rutgers organizations, via centerres.rutgers.edu.
+//
+// Two branches:
+//  - `room:` given  → single-room search via fetchRoomDay() (typed straight
+//    into the site's own search box, so works for anything the site itself
+//    can find).
+//  - no `room:`     → bulk summary across EVERY room currently loaded in the
+//    DOM (166 rooms / 7 buildings as of the last discovery run), via
+//    fetchAllRoomsSummary(), grouped by building.
+
+function parseRequestedDate(dateStr) {
+  const today = new Date();
+  if (!dateStr || /^today$/i.test(dateStr)) return today.toISOString().slice(0, 10);
+  if (/^tomorrow$/i.test(dateStr)) {
+    const t = new Date(today);
+    t.setDate(t.getDate() + 1);
+    return t.toISOString().slice(0, 10);
+  }
+  // Accept YYYY-MM-DD directly; otherwise fall back to today.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  return today.toISOString().slice(0, 10);
+}
+
+function loginRequiredEmbed() {
+  return {
+    color: 0xED4245,
+    title: '🔒 Login Required',
+    description: [
+      "The bot doesn't currently have a valid session for Student Center rooms.",
+      '',
+      `Browsing this system requires an approved organization account: [Create/manage an account](${LOGIN_URL})`,
+    ].join('\n'),
+    footer: { text: 'centerres.rutgers.edu' }
+  };
+}
+
+async function handleStudentCenterSingleRoom(interaction, userId, roomInput, date, dateLabel) {
+  const day = await fetchRoomDay(roomInput, date);
+
+  if (day.status === 'auth_required') {
+    await interaction.editReply({ embeds: [loginRequiredEmbed()] }).catch(() => {});
+    return;
+  }
+
+  let value;
+  if (day.status === 'not_found') {
+    value = `❓ No room matched "${roomInput}" — check the spelling, or [browse directly](${BROWSE_URL})`;
+  } else if (day.status === 'error') {
+    value = `⚠️ Could not load this room's schedule right now — [check directly](${BROWSE_URL})`;
+  } else if (day.status === 'busy') {
+    const count = day.events.length;
+    value = `🔴 Busy — ${count} booking${count !== 1 ? 's' : ''} today (times not yet shown — [check directly](${BROWSE_URL}))`;
+  } else {
+    value = '🟢 No bookings found — appears open';
+  }
+
+  const isToday = date === new Date().toISOString().slice(0, 10);
+
+  const embed = {
+    color: 0xCC0033,
+    title: `🏢 Student Center Rooms — ${dateLabel}`,
+    description: [
+      'Rooms for **established Rutgers student organizations** only — not individual students.',
+      `Searched for: **${roomInput}**`,
+      !isToday ? "⚠️ Date selection isn't wired up yet — showing **today's** status regardless of the date requested." : null,
+      `[Browse & book on centerres.rutgers.edu](${BROWSE_URL})`,
+    ].filter(Boolean).join('\n'),
+    fields: [{ name: roomInput, value, inline: false }],
+    footer: { text: 'centerres.rutgers.edu' }
+  };
+
+  await interaction.editReply({ embeds: [embed] }).catch(() => {});
+  logger.info('Handled /student-center (single room)', { userId, date, room: roomInput });
+}
+
+// Chunk a building's room list into embed fields (Discord caps a field's
+// value length and an embed's total field count, and some buildings have
+// 30-40 rooms — one field per room isn't safe).
+const ROOMS_PER_FIELD = 15;
+
+function chunkRoomFields(rooms) {
+  const fields = [];
+  for (let i = 0; i < rooms.length; i += ROOMS_PER_FIELD) {
+    const chunk = rooms.slice(i, i + ROOMS_PER_FIELD);
+    const value = chunk
+      .map(r => `${r.busy ? '🔴' : '🟢'} ${r.name}${r.capacity ? ` (${r.capacity} cap)` : ''}${r.busy ? ` — ${r.bookingCount} booking${r.bookingCount !== 1 ? 's' : ''}` : ''}`)
+      .join('\n');
+    fields.push({
+      name: fields.length === 0 ? 'Rooms' : `Rooms (cont.)`,
+      value,
+      inline: false
+    });
+  }
+  return fields;
+}
+
+async function handleStudentCenterSummary(interaction, userId, date, dateLabel, buildingFilter) {
+  const summary = await fetchAllRoomsSummary(date);
+
+  if (summary.authRequired) {
+    await interaction.editReply({ embeds: [loginRequiredEmbed()] }).catch(() => {});
+    return;
+  }
+
+  if (summary.error || summary.total === 0) {
+    const embed = {
+      color: 0xED4245,
+      title: '⚠️ Could Not Load Student Center Rooms',
+      description: `Something went wrong scraping the room list — [check directly](${BROWSE_URL}).\n\nTry \`/student-center room: <name>\` to search a specific room instead.`,
+      footer: { text: 'centerres.rutgers.edu' }
+    };
+    await interaction.editReply({ embeds: [embed] }).catch(() => {});
+    logger.info('Handled /student-center (summary)', { userId, date, total: 0, open: 0 });
+    return;
+  }
+
+  const isToday = date === new Date().toISOString().slice(0, 10);
+
+  // ── Filtered to one building: list its individual rooms ──────────────────
+  if (buildingFilter) {
+    const filterLower = buildingFilter.trim().toLowerCase();
+    const matched = summary.rooms.filter(r =>
+      r.buildingId === buildingFilter.trim() ||
+      r.buildingLabel.toLowerCase().includes(filterLower)
+    );
+
+    if (matched.length === 0) {
+      const available = summary.buildings.map(b => b.label).join(', ');
+      const embed = {
+        color: 0xED4245,
+        title: '🔍 No Matching Building',
+        description: `Nothing matched **"${buildingFilter}"**.\n\nAvailable buildings today: ${available}`,
+        footer: { text: 'centerres.rutgers.edu' }
+      };
+      await interaction.editReply({ embeds: [embed] }).catch(() => {});
+      logger.info('Handled /student-center (summary, building not found)', { userId, date, buildingFilter });
+      return;
+    }
+
+    const openCount = matched.filter(r => !r.busy).length;
+    const busyCount = matched.length - openCount;
+    const label = matched[0].buildingLabel;
+    const openRooms = matched.filter(r => !r.busy);
+
+    const embed = {
+      color: 0xCC0033,
+      title: `🏢 ${label} — ${dateLabel}`,
+      description: [
+        'Rooms for **established Rutgers student organizations** only — not individual students.',
+        `**${openCount} open**, ${busyCount} busy (hidden below), out of ${matched.length} rooms.`,
+        !isToday ? "⚠️ Date selection isn't wired up yet — showing **today's** status regardless of the date requested." : null,
+        `[Browse & book on centerres.rutgers.edu](${BROWSE_URL})`,
+      ].filter(Boolean).join('\n'),
+      fields: openRooms.length
+        ? chunkRoomFields(openRooms)
+        : [{ name: 'No open rooms', value: `Every room in ${label} is currently busy — [check directly](${BROWSE_URL})`, inline: false }],
+      footer: { text: 'centerres.rutgers.edu' }
+    };
+
+    await interaction.editReply({ embeds: [embed] }).catch(() => {});
+    logger.info('Handled /student-center (summary, building filtered)', { userId, date, buildingFilter: label, total: matched.length, open: openCount });
+    return;
+  }
+
+  // ── No filter: all-buildings overview ─────────────────────────────────────
+  const fields = summary.buildings.map(b => ({
+    name: b.label,
+    value: `🟢 ${b.open} open · 🔴 ${b.busy} busy (of ${b.total})`,
+    inline: true
+  }));
+
+  const embed = {
+    color: 0xCC0033,
+    title: `🏢 Student Center Rooms — ${dateLabel}`,
+    description: [
+      'Rooms for **established Rutgers student organizations** only — not individual students.',
+      `**${summary.open} open, ${summary.busy} busy**, out of ${summary.total} rooms found.`,
+      !isToday ? "⚠️ Date selection isn't wired up yet — showing **today's** status regardless of the date requested." : null,
+      `Search a room with \`/student-center room: <name>\`, filter to one building with \`/student-center building: <name>\`, or [browse directly](${BROWSE_URL}).`,
+    ].filter(Boolean).join('\n'),
+    fields,
+    footer: { text: 'centerres.rutgers.edu' }
+  };
+
+  await interaction.editReply({ embeds: [embed] }).catch(() => {});
+  logger.info('Handled /student-center (summary)', { userId, date, total: summary.total, open: summary.open });
+}
+
+async function handleStudentCenter(interaction, userId) {
+  const dateInput = interaction.options.getString('date');
+  const roomInput = interaction.options.getString('room');
+  const buildingInput = interaction.options.getString('building');
+  const date = parseRequestedDate(dateInput);
+  const dateLabel = new Date(date + 'T12:00:00').toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York'
+  });
+
+  if (roomInput) {
+    // `room:` takes priority over `building:` if both are somehow given —
+    // a specific room search is more precise than a building filter.
+    await handleStudentCenterSingleRoom(interaction, userId, roomInput, date, dateLabel);
+  } else {
+    await handleStudentCenterSummary(interaction, userId, date, dateLabel, buildingInput);
+  }
+}
 
 // ── /ask ──────────────────────────────────────────────────────────────────────
 
@@ -410,7 +630,7 @@ async function handleHelp(interaction) {
     '',
     '`/next-available <room> [date]` — Get the direct LibCal link to check and book the next available slot for a room.',
     '',
-    '`/student-center [date]` — Learn about student center rooms (for established Rutgers organizations only).',
+    '`/student-center [room] [building] [date]` — Browse Student Center rooms for established Rutgers organizations. Leave both blank for a summary across all buildings, filter to one building, or specify a room to search it directly.',
     '',
     '`/booking-links <type>` — Quick links to reservation pages for library rooms or student center rooms.',
     '',
@@ -475,7 +695,7 @@ async function handleInteraction(interaction) {
     if (commandName === 'booking-links')  await handleBookingLinks(interaction);
     if (commandName === 'ask')            await handleAsk(interaction, userId, username);
     if (commandName === 'help')           await handleHelp(interaction);
-    // /student-center handler to be added
+    if (commandName === 'student-center') await handleStudentCenter(interaction, userId);
   } catch (err) {
     logger.error('Handler error:', { command: commandName, error: err.message });
     await interaction.editReply('Sorry, something went wrong. Please try again later.').catch(() => {});

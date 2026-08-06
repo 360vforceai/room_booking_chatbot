@@ -1,0 +1,86 @@
+{
+  "scrapedAt": "2026-08-06T00:29:29.652Z",
+  "headingGuesses": {
+    "1": null,
+    "2": null,
+    "5": null,
+    "6": null,
+    "7": null,
+    "9": null,
+    "328": null
+  },
+  "panelItems": [
+    {
+      "value": "on",
+      "text": ""
+    },
+    {
+      "value": "-1",
+      "text": "Select All Centers"
+    },
+    {
+      "value": "2",
+      "text": "Busch Student Center"
+    },
+    {
+      "value": "1",
+      "text": "College Avenue Student Center"
+    },
+    {
+      "value": "5",
+      "text": "Cook Student Center"
+    },
+    {
+      "value": "6",
+      "text": "Douglass Student Center"
+    },
+    {
+      "value": "7",
+      "text": "Livingston Student Center"
+    },
+    {
+      "value": "328",
+      "text": "Outdoor Space"
+    },
+    {
+      "value": "9",
+      "text": "Student Activities Center"
+    },
+    {
+      "value": "-1",
+      "text": "Select All Views"
+    },
+    {
+      "value": "262",
+      "text": "BOOK IT NOW! Rooms"
+    },
+    {
+      "value": "17",
+      "text": "Contact Tables"
+    },
+    {
+      "value": "403",
+      "text": "CSC Meeting Rooms"
+    },
+    {
+      "value": "15",
+      "text": "Event Spaces"
+    },
+    {
+      "value": "16",
+      "text": "Meeting Rooms"
+    },
+    {
+      "value": "25",
+      "text": "Multipurpose Rooms"
+    },
+    {
+      "value": "374",
+      "text": "Special"
+    },
+    {
+      "value": "137",
+      "text": "Student Center Plazas"
+    }
+  ]
+}

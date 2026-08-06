@@ -1,0 +1,1002 @@
+{
+  "scrapedAt": "2026-08-05T23:59:48.012Z",
+  "rooms": [
+    {
+      "roomId": "113",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "115",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "118",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "120",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "116",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "119",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "117",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "121",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "114",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Staff Offices"
+    },
+    {
+      "roomId": "122",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "125",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "127",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "123",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "126",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "124",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "128",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "131",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "133",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "129",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "132",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "130",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "143",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOL Break Room"
+    },
+    {
+      "roomId": "342",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "195",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "134",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Storage"
+    },
+    {
+      "roomId": "138",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "139",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "140",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "141",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "142",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "145",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "147",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "144",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "148",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "137",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "135",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "136",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "149",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "341",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "243",
+      "buildingId": "2",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedOrientation Week 7"
+    },
+    {
+      "roomId": "360",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "244",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "11",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "14",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "1",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "12",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "15",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "13",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "105",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "6",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "2",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "102",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "103",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "104",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "7",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailableUnavailable"
+    },
+    {
+      "roomId": "16",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "108",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "8",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "9",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "10",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "370",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "371",
+      "buildingId": "1",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "17",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "20",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "22",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "18",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "21",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "19",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "33",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "35",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "45",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "46",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "47",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "31",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "38",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "327",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "32",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "24",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "325",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "23",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "34",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "25",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailableUnavailable"
+    },
+    {
+      "roomId": "28",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailableUnavailable"
+    },
+    {
+      "roomId": "30",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailableUnavailable"
+    },
+    {
+      "roomId": "26",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailableUnavailable"
+    },
+    {
+      "roomId": "29",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailableUnavailable"
+    },
+    {
+      "roomId": "27",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailableUnavailable"
+    },
+    {
+      "roomId": "44",
+      "buildingId": "5",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "57",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "58",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "74",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "296",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "361",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "164",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "88",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "89",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "92",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "79",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "81",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "87",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "85",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "83",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "339",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "338",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "90",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "167",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "76",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "64",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "67",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "69",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "71",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "72",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "326",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "75",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "100",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "324",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "290",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "95",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedNJACDA Summer Conference Lunch"
+    },
+    {
+      "roomId": "96",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "97",
+      "buildingId": "6",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedNJACDA Summer Conference Lunch"
+    },
+    {
+      "roomId": "158",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "159",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "246",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "228",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026"
+    },
+    {
+      "roomId": "230",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026"
+    },
+    {
+      "roomId": "229",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026"
+    },
+    {
+      "roomId": "235",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026"
+    },
+    {
+      "roomId": "239",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026"
+    },
+    {
+      "roomId": "238",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026"
+    },
+    {
+      "roomId": "236",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026"
+    },
+    {
+      "roomId": "240",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026"
+    },
+    {
+      "roomId": "237",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026"
+    },
+    {
+      "roomId": "242",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "241",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "232",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "233",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "247",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026"
+    },
+    {
+      "roomId": "173",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "174",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "170",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "411",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "412",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "340",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "231",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026"
+    },
+    {
+      "roomId": "200",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "157",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026Unavailable"
+    },
+    {
+      "roomId": "155",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "156",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedGrad And Grow 2026Unavailable"
+    },
+    {
+      "roomId": "331",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "183",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "234",
+      "buildingId": "7",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosedUnavailable"
+    },
+    {
+      "roomId": "376",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "377",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "382",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "384",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "381",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "378",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "379",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "393",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "380",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "386",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "387",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "385",
+      "buildingId": "328",
+      "visible": true,
+      "textHint": null
+    },
+    {
+      "roomId": "372",
+      "buildingId": "9",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "152",
+      "buildingId": "9",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    },
+    {
+      "roomId": "154",
+      "buildingId": "9",
+      "visible": true,
+      "textHint": "ClosedClosedClosedClosed"
+    }
+  ],
+  "locationsHtml": "<div class=\"modal fade in\" tabindex=\"-1\" role=\"dialog\" id=\"filterModal\" aria-labelledby=\"filterModalLabel\" style=\"display: block;\"><div class=\"modal-dialog\" role=\"document\"><div class=\"modal-content\"><div class=\"modal-header\"><button type=\"button\" onkeydown=\"handleRecurenceKeyPress(&quot;.btnEndClose&quot;,null,null,null)\" class=\"close btnStartClose\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">×</span></button><h4 class=\"modal-title\" id=\"filterModalLabel\" tabindex=\"0\">Locations</h4></div><div class=\"modal-body\"><ul class=\"nav nav-tabs hidden-xs\" role=\"tablist\"><li role=\"presentation\" class=\"active\"><a href=\"#filter-main4f4dr\" aria-controls=\"filter-main\" role=\"tab\" data-toggle=\"tab\" aria-expanded=\"true\">Centers</a></li><li role=\"presentation\"><a href=\"#filter-secondary4f4dr\" aria-controls=\"filter-secondary\" role=\"tab\" data-toggle=\"tab\" aria-expanded=\"false\">Views</a></li><div class=\"checkbox favorite-box\" style=\"display: none;\"><label><input type=\"checkbox\" placeholder=\"Find locations\"><span></span></label></div></ul><div class=\"row visible-xs hidden-sm\"><div class=\"col-xs-8\"><select class=\"form-control responsive-tab-drop\"><option value=\"0\">Centers</option><option value=\"1\">Views</option></select></div><div class=\"col-xs-4 responsive-favorite-container\"></div></div><div class=\"tab-content\"><div role=\"tabpanel\" tabindex=\"-1\" class=\"tab-pane active fade in\" id=\"filter-main4f4dr\" style=\"height: 100%;\"><div class=\"row\"><div class=\"area-filter-container col-sm-4 col-xs-12\"><div class=\"btn-group\" id=\"btn-group\" style=\"width: 100%\"><button id=\"area-filter-btn4f4dr\" type=\"button\" class=\"btn btn-default dropdown-toggle\" data-togle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\" style=\"width: 100%; padding-bottom: 3px;\"><span class=\"filter-area-dropdown\" tabindex=\"-1\">Filter By Area</span><span class=\"caret\" style=\"vertical-align: super;\"></span></button><ul class=\"dropdown-menu\" aria-labelledby=\"area-filter-btn4f4dr\" style=\"left: 20px;\"><li class=\"area-filter-type-ahead\"><input type=\"text\" class=\"area-type-ahead\" placeholder=\"Search for Area\" maxlength=\"255\"><i class=\"fa fa-search\"></i><hr></li><li><a href=\"#\" data-id=\"-1\">Show All Areas</a></li><li><a href=\"#\" data-id=\"117\">Busch/Livingston Campus</a></li><li><a href=\"#\" data-id=\"119\">College Avenue Campus</a></li><li><a href=\"#\" data-id=\"118\">Cook/Douglass Campus</a></li><li><a href=\"#\" data-id=\"-2\">(Ungrouped Centers)</a></li></ul></div></div><div class=\"building-filter-container col-sm-8 col-xs-12\" style=\"margin-top: 0px;\"><div class=\"input-group\"><input type=\"text\" class=\"form-control filter-modal-typeahead\" maxlength=\"255\" placeholder=\"Find locations\"><i class=\"fa fa-search\"></i></div></div></div><div class=\"row\"><div class=\"checkbox-group-all main\"><div class=\"checkbox\"><label><input type=\"checkbox\" class=\"filter-checkbox all-box\" value=\"-1\" aria-label=\"Select All Centers\" placeholder=\"Find locations\"><span>Select All Centers</span></label></div></div><div class=\"checkbox-group main\" tabindex=\"-1\"><div class=\"checkbox\" data-type=\"-1\" role=\"presentation\"><label role=\"presentation\"><input type=\"checkbox\" class=\"filter-checkbox\" aria-label=\"Busch Student Center\" value=\"2\">Busch Student Center</label></div><div class=\"checkbox\" data-type=\"-1\" role=\"presentation\"><label role=\"presentation\"><input type=\"checkbox\" class=\"filter-checkbox\" aria-label=\"College Avenue Student Center\" value=\"1\">College Avenue Student Center</label></div><div class=\"checkbox\" data-type=\"-1\" role=\"presentation\"><label role=\"presentation\"><input type=\"checkbox\" class=\"filter-checkbox\" aria-label=\"Cook Student Center\" value=\"5\">Cook Student Center</label></div><div class=\"checkbox\" data-type=\"-1\" role=\"presentation\"><label role=\"presentation\"><input type=\"checkbox\" class=\"filter-checkbox\" aria-label=\"Douglass Student Center\" value=\"6\">Douglass Student Center</label></div><div class=\"checkbox\" data-type=\"-1\" role=\"presentation\"><label role=\"presentation\"><input type=\"checkbox\" class=\"filter-checkbox\" aria-label=\"Livingston Student Center\" value=\"7\">Livingston Student Center</label></div><div class=\"checkbox\" data-type=\"-1\" role=\"presentation\"><label role=\"presentation\"><input type=\"checkbox\" class=\"filter-checkbox\" aria-label=\"Outdoor Space\" value=\"328\">Outdoor Space</label></div><div class=\"checkbox\" data-type=\"-1\" role=\"presentation\"><label role=\"presentation\"><input type=\"checkbox\" class=\"filter-checkbox\" aria-label=\"Student Activities Center\" value=\"9\">Student Activities Center</label></div></div></div></div><div role=\"tabpanel\" div=\"\" class=\"tab-pane fade\" id=\"filter-secondary4f4dr\" style=\"height: 100%;\"><div class=\"row\"><div class=\"input-group\"><input type=\"text\" class=\"form-control filter-modal-typeahead-secondary\" maxlength=\"255\" placeholder=\"Find locations\"><i class=\"fa fa-search\"></i></div></div><div class=\"row\"><div class=\"checkbox-group-all secondary\"><div class=\"checkbox\"><label><input type=\"checkbox\" class=\"filter-checkbox all-box\" value=\"-1\" aria-labe"
+}

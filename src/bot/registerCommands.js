@@ -59,7 +59,6 @@ const commands = [
         description: 'Required amenity or technology (optional)',
         required: false,
         choices: [
-          // Technology
           { name: 'Computer Station',      value: 'computer_station' },
           { name: 'HDMI Port & Monitor',   value: 'hdmi' },
           { name: 'Large Display',         value: 'large_display' },
@@ -67,7 +66,6 @@ const commands = [
           { name: 'Recording Equipment',   value: 'recording' },
           { name: 'USB Charging Hubs',     value: 'usb_charging' },
           { name: 'Webcam',                value: 'webcam' },
-          // Amenities
           { name: 'Configurable Furniture', value: 'configurable_furniture' },
           { name: 'Group Table & Chairs',  value: 'group_table' },
           { name: 'Individual Desks',      value: 'individual_desks' },
@@ -80,6 +78,19 @@ const commands = [
     name: 'student-center',
     description: 'Browse student center rooms (for established Rutgers organizations only)',
     options: [
+      {
+        name: 'room',
+        type: 3,
+        description: 'Room or building to search (e.g. "BSC 115", "Busch Student Center"). Leave blank for a full summary.',
+        required: false
+      },
+      {
+        name: 'building',
+        type: 3,
+        description: 'Filter to one building. Ignored if room is set.',
+        required: false,
+        autocomplete: true
+      },
       {
         name: 'date',
         type: 3,
@@ -153,6 +164,7 @@ const commands = [
 async function registerCommands() {
   const token = process.env.DISCORD_TOKEN;
   const appId = process.env.DISCORD_APP_ID;
+  const guildId = process.env.DISCORD_GUILD_ID; // optional — set this for instant updates while testing
 
   if (!token) { logger.error('DISCORD_TOKEN is not set'); process.exit(1); }
   if (!appId)  { logger.error('DISCORD_APP_ID is not set'); process.exit(1); }
@@ -160,12 +172,24 @@ async function registerCommands() {
   console.log('Token exists:', !!token);
   console.log('Token length:', token?.length);
   console.log('App ID:', appId);
+  console.log('Guild ID:', guildId || '(none — registering globally, can take up to ~1hr to appear)');
 
   const rest = new REST({ version: '10' }).setToken(token);
 
+  // Guild-scoped commands (Routes.applicationGuildCommands) show up in
+  // Discord clients almost instantly — great for testing. Global commands
+  // (Routes.applicationCommands, no guildId) work in every server the bot
+  // is in, but Discord can take up to roughly an hour to propagate changes
+  // to clients. Set DISCORD_GUILD_ID in your .env to use the fast path
+  // while iterating; remove it (or leave unset) once you're ready to go
+  // global everywhere.
+  const route = guildId
+    ? Routes.applicationGuildCommands(appId, guildId)
+    : Routes.applicationCommands(appId);
+
   try {
-    logger.info('Registering slash commands...');
-    const data = await rest.put(Routes.applicationCommands(appId), { body: commands });
+    logger.info(`Registering slash commands (${guildId ? 'guild-scoped, instant' : 'global, may take up to ~1hr to appear'})...`);
+    const data = await rest.put(route, { body: commands });
     logger.info('Successfully registered', data.length, 'command(s)');
     process.exit(0);
   } catch (err) {
